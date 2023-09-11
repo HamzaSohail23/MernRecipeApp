@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useGetUserID } from "../hooks/useGetUserID";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { useGetUserID } from "../hooks/useGetUserID";
 
 export const CreateRecipe = () => {
   const userID = useGetUserID();
-  const [cookies] = useCookies(["access_token"]);
+  const [cookies, _] = useCookies(["access_token"]);
   const [recipe, setRecipe] = useState({
     name: "",
     description: "",
@@ -38,15 +38,8 @@ export const CreateRecipe = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    // Check if userID is available
-    if (!userID) {
-      console.error("User ID is not available.");
-      return;
-    }
-
     try {
-      const response = await axios.post(
+      await axios.post(
         "https://mern-recipe-app-f68043e5c805.herokuapp.com/recipes",
         { ...recipe },
         {
@@ -54,12 +47,8 @@ export const CreateRecipe = () => {
         }
       );
 
-      if (response.status === 201) {
-        alert("Recipe Created");
-        navigate("/");
-      } else {
-        console.error("Failed to create recipe.");
-      }
+      alert("Recipe Created");
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
@@ -76,7 +65,6 @@ export const CreateRecipe = () => {
           name="name"
           value={recipe.name}
           onChange={handleChange}
-          required
         />
         <label htmlFor="description">Description</label>
         <textarea
@@ -84,7 +72,6 @@ export const CreateRecipe = () => {
           name="description"
           value={recipe.description}
           onChange={handleChange}
-          required
         ></textarea>
         <label htmlFor="ingredients">Ingredients</label>
         {recipe.ingredients.map((ingredient, index) => (
@@ -94,7 +81,6 @@ export const CreateRecipe = () => {
             name="ingredients"
             value={ingredient}
             onChange={(event) => handleIngredientChange(event, index)}
-            required
           />
         ))}
         <button type="button" onClick={handleAddIngredient}>
@@ -106,7 +92,6 @@ export const CreateRecipe = () => {
           name="instructions"
           value={recipe.instructions}
           onChange={handleChange}
-          required
         ></textarea>
         <label htmlFor="imageUrl">Image URL</label>
         <input
